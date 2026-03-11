@@ -26,6 +26,9 @@ const columnColors: Record<string, string> = {
   Withdrawn: "bg-gray-500",
 };
 
+type InterestFilter = "All" | "High" | "Medium" | "Low";
+const INTEREST_FILTERS: InterestFilter[] = ["All", "High", "Medium", "Low"];
+
 function KanbanColumn({
   status,
   prospects,
@@ -35,10 +38,19 @@ function KanbanColumn({
   prospects: Prospect[];
   isLoading: boolean;
 }) {
+  const [filter, setFilter] = useState<InterestFilter>("All");
+
+  const filteredProspects =
+    filter === "All"
+      ? prospects
+      : prospects.filter((p) => p.interestLevel === filter);
+
+  const colSlug = status.replace(/\s+/g, "-").toLowerCase();
+
   return (
     <div
       className="flex flex-col min-w-[260px] max-w-[320px] w-full bg-muted/40 rounded-md"
-      data-testid={`column-${status.replace(/\s+/g, "-").toLowerCase()}`}
+      data-testid={`column-${colSlug}`}
     >
       <div className="flex items-center gap-2 px-3 py-2.5 border-b border-border/50">
         <div className={`w-2 h-2 rounded-full ${columnColors[status] || "bg-gray-400"}`} />
@@ -46,24 +58,42 @@ function KanbanColumn({
         <Badge
           variant="secondary"
           className="ml-auto text-[10px] px-1.5 py-0 h-5 min-w-[20px] flex items-center justify-center no-default-active-elevate"
-          data-testid={`badge-count-${status.replace(/\s+/g, "-").toLowerCase()}`}
+          data-testid={`badge-count-${colSlug}`}
         >
-          {prospects.length}
+          {filteredProspects.length}
         </Badge>
       </div>
-      <div className="flex-1 overflow-y-auto px-2 py-2">
+      <div className="flex items-center gap-1 px-2 pt-2 pb-1">
+        {INTEREST_FILTERS.map((level) => (
+          <button
+            key={level}
+            onClick={() => setFilter(level)}
+            data-testid={`filter-${colSlug}-${level.toLowerCase()}`}
+            className={`text-[10px] font-medium px-1.5 py-0.5 rounded transition-colors ${
+              filter === level
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
+            }`}
+          >
+            {level}
+          </button>
+        ))}
+      </div>
+      <div className="flex-1 overflow-y-auto px-2 py-1">
         <div className="space-y-2">
           {isLoading ? (
             <>
               <Skeleton className="h-28 rounded-md" />
               <Skeleton className="h-20 rounded-md" />
             </>
-          ) : prospects.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-center" data-testid={`empty-${status.replace(/\s+/g, "-").toLowerCase()}`}>
-              <p className="text-xs text-muted-foreground">No prospects</p>
+          ) : filteredProspects.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center" data-testid={`empty-${colSlug}`}>
+              <p className="text-xs text-muted-foreground">
+                {prospects.length === 0 ? "No prospects" : "No matching prospects"}
+              </p>
             </div>
           ) : (
-            prospects.map((prospect) => (
+            filteredProspects.map((prospect) => (
               <ProspectCard key={prospect.id} prospect={prospect} />
             ))
           )}
