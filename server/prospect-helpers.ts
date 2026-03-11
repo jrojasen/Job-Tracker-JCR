@@ -47,6 +47,13 @@ export function validateProspect(data: Record<string, unknown>): { valid: boolea
     }
   }
 
+  if (data.followUpDate !== undefined && data.followUpDate !== null && data.followUpDate !== "") {
+    const d = new Date(String(data.followUpDate));
+    if (isNaN(d.getTime())) {
+      errors.push("Please enter a valid follow-up date");
+    }
+  }
+
   return { valid: errors.length === 0, errors };
 }
 

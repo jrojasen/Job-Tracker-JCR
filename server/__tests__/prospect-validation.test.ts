@@ -110,3 +110,70 @@ describe("salary validation", () => {
     expect(result.errors).toContain("Please enter a valid salary amount");
   });
 });
+
+describe("follow-up date validation", () => {
+  test("accepts a prospect with no follow-up date", () => {
+    const result = validateProspect({
+      companyName: "Google",
+      roleTitle: "Engineer",
+    });
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  test("accepts a blank follow-up date string", () => {
+    const result = validateProspect({
+      companyName: "Google",
+      roleTitle: "Engineer",
+      followUpDate: "",
+    });
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  test("accepts a valid future date", () => {
+    const result = validateProspect({
+      companyName: "Google",
+      roleTitle: "Engineer",
+      followUpDate: "2099-12-31",
+    });
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  test("accepts a valid past date", () => {
+    const result = validateProspect({
+      companyName: "Google",
+      roleTitle: "Engineer",
+      followUpDate: "2020-01-15",
+    });
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  test("rejects a non-date string", () => {
+    const result = validateProspect({
+      companyName: "Google",
+      roleTitle: "Engineer",
+      followUpDate: "not-a-date",
+    });
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("Please enter a valid follow-up date");
+  });
+
+  test("rejects a malformed date", () => {
+    const result = validateProspect({
+      companyName: "Google",
+      roleTitle: "Engineer",
+      followUpDate: "2024-99-99",
+    });
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("Please enter a valid follow-up date");
+  });
+});

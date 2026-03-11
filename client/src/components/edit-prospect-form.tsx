@@ -43,6 +43,7 @@ export function EditProspectForm({ prospect, onSuccess }: EditProspectFormProps)
       interestLevel: prospect.interestLevel as InsertProspect["interestLevel"],
       notes: prospect.notes ?? "",
       targetSalary: prospect.targetSalary ?? "",
+      followUpDate: prospect.followUpDate ?? "",
     },
   });
 
@@ -174,6 +175,25 @@ export function EditProspectForm({ prospect, onSuccess }: EditProspectFormProps)
                   {...field}
                   value={field.value ?? ""}
                   data-testid="input-edit-target-salary"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="followUpDate"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Follow-up Date (optional)</FormLabel>
+              <FormControl>
+                <Input
+                  type="date"
+                  {...field}
+                  value={field.value ?? ""}
+                  data-testid="input-edit-followup-date"
                 />
               </FormControl>
               <FormMessage />

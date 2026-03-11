@@ -23,6 +23,7 @@ export const prospects = pgTable("prospects", {
   interestLevel: text("interest_level").notNull().default("Medium"),
   notes: text("notes"),
   targetSalary: text("target_salary"),
+  followUpDate: text("follow_up_date"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -48,6 +49,18 @@ export const insertProspectSchema = createInsertSchema(prospects).omit({
     .optional()
     .nullable()
     .refine(isValidSalary, { message: "Please enter a valid salary (e.g. 85000)" }),
+  followUpDate: z
+    .string()
+    .optional()
+    .nullable()
+    .refine(
+      (val) => {
+        if (!val || val.trim() === "") return true;
+        const d = new Date(val);
+        return !isNaN(d.getTime());
+      },
+      { message: "Please enter a valid follow-up date" }
+    ),
 });
 
 export type InsertProspect = z.infer<typeof insertProspectSchema>;
