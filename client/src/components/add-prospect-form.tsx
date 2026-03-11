@@ -38,6 +38,7 @@ export function AddProspectForm({ onSuccess }: { onSuccess?: () => void }) {
       interestLevel: "Medium",
       notes: "",
       targetSalary: "",
+      followUpDate: "",
     },
   });
 
@@ -170,6 +171,25 @@ export function AddProspectForm({ onSuccess }: { onSuccess?: () => void }) {
                   {...field}
                   value={field.value ?? ""}
                   data-testid="input-target-salary"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="followUpDate"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Follow-up Date (optional)</FormLabel>
+              <FormControl>
+                <Input
+                  type="date"
+                  {...field}
+                  value={field.value ?? ""}
+                  data-testid="input-followup-date"
                 />
               </FormControl>
               <FormMessage />
