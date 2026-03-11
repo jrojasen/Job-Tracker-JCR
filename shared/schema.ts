@@ -22,8 +22,16 @@ export const prospects = pgTable("prospects", {
   status: text("status").notNull().default("Bookmarked"),
   interestLevel: text("interest_level").notNull().default("Medium"),
   notes: text("notes"),
+  targetSalary: text("target_salary"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+function isValidSalary(val: string | null | undefined): boolean {
+  if (!val || val.trim() === "") return true;
+  const cleaned = val.replace(/[$,\s]/g, "");
+  const num = Number(cleaned);
+  return !isNaN(num) && num >= 0 && num <= 10_000_000;
+}
 
 export const insertProspectSchema = createInsertSchema(prospects).omit({
   id: true,
@@ -35,6 +43,11 @@ export const insertProspectSchema = createInsertSchema(prospects).omit({
   interestLevel: z.enum(INTEREST_LEVELS).default("Medium"),
   jobUrl: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
+  targetSalary: z
+    .string()
+    .optional()
+    .nullable()
+    .refine(isValidSalary, { message: "Please enter a valid salary (e.g. 85000)" }),
 });
 
 export type InsertProspect = z.infer<typeof insertProspectSchema>;
